@@ -14,7 +14,7 @@
 /**
  * File: csv2h2.cpp
  * Last Modified By: Jonah Berean
- * Date: 28/01/2017
+ * Date: 29/08/2017
  * Purpose: This program simply pulls the data from the output of the TRIFIC simulation and plots
  * 	on a histogram using ROOT.
 **/
