@@ -11,10 +11,6 @@ The quoted section below is from the TRIM documentation, and details a more accu
 
 ---
 
-In the post with ID 35 on the TRIFIC ELog, simulations were performed using energies that received relativistic corrections. This procedure should be better documented for future simulation work.
-
----
-
 On the wiki, and in the sample simulation file, the absolute minimum distance for simulation is given as 279.18 mm with 21 grids installed. This neglects the bending of the mylar window towards the upstream beam line, roughly estimated to be about a centimetre. TRIM simulates incoming ions with no space distribution as to their entry, it is all from a single point. This is not physically the case with the upstream beam line arriving at TRIFIC, and also the fact of the window bend being convex means that the deviation from center of an ion's entering position will affect the point at which it first hits the aluminized layer. Such accuracy improvements may be overkill, but are interesting to consider as a future improvement. 
 
 ---
