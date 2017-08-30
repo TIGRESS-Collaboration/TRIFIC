@@ -63,7 +63,7 @@ float processSRIMData (istream& srimCollisionDataSource, string isotopeName[], f
 
 	int 	colNum 		= 0; 		// counter of collisions in current input file
 	int 	totalColNum 	= 0; 		// counter of collisions in all input files
-	int	maxNum 		= 1;		// !!! wtf
+	int	maxNum 		= 1;		
 	bool 	readIon 	= false;
 
 	while (getline(srimCollisionDataSource, line)) {
