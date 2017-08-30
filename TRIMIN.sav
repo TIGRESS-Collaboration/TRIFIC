@@ -1,0 +1,36 @@
+==> SRIM-2013.00 This file controls TRIM Calculations.
+Ion: Z1 ,  M1,  Energy (keV), Angle,Number,Bragg Corr,AutoSave Number.
+    31  79.937      516000       0      10        1    10000
+Cascades(1=No;2=Full;3=Sputt;4-5=Ions;6-7=Neutrons), Random Number Seed, Reminders
+                      1                                   0       0
+Diskfiles (0=no,1=yes): Ranges, Backscatt, Transmit, Sputtered, Collisions(1=Ion;2=Ion+Recoils), Special EXYZ.txt file
+                          0       0           0       0               2                               0
+Target material : Number of Elements & Layers
+"Ga (451200) into Al2O3+Mylar+CF4        "       7               3
+PlotType (0-5); Plot Depths: Xmin, Xmax(Ang.) [=0 0 for Viewing Full Target]
+       5                         0     2.79186E+09
+Target Elements:    Z   Mass(amu)
+Atom 1 = Al =      13  26.982
+Atom 2 = O =       8  15.999
+Atom 3 = H =       1   1.008
+Atom 4 = C =       6  12.011
+Atom 5 = O =       8  15.999
+Atom 6 = C =       6  12.011
+Atom 7 = F =       9  18.998
+Layer   Layer Name /               Width Density    Al(13)    O(8)    H(1)    C(6)    O(8)    C(6)    F(9)
+Numb.   Description                (Ang) (g/cm3)    Stoich  Stoich  Stoich  Stoich  Stoich  Stoich  Stoich
+ 1      "Al2O3"           900.0001  3.98      .4      .6       0       0       0       0       0
+ 2      "Mylar"           59099.9984741211  1.397       0       0 .363636 .454545 .181818       0       0
+ 3      "CF4"           2791799926.75781  .00045731       0       0       0       0       0      .2      .8
+0  Target layer phases (0=Solid, 1=Gas)
+0 0 1 
+Target Compound Corrections (Bragg)
+ 1   1   1  
+Individual target atom displacement energies (eV)
+      25      28      10      28      28      28      25
+Individual target atom lattice binding energies (eV)
+       3       3       3       3       3       3       3
+Individual target atom surface binding energies (eV)
+    3.36       2       2    7.41       2    7.41       2
+Stopping Power Version (1=2011, 0=2011)
+ 0 
