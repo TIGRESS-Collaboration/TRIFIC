@@ -2,9 +2,9 @@
 /**
  * g++ csv2h2.cpp -o csv2h2 `root-config --cflags --libs`    ----------  compile line
  * Must be run with data piped in from TRIFIC Simulation:
- * ./TRIFICSimulation <collision file> | ./csv2h2
+ * ./TRIFICsim <collision file> | ./csv2h2
  * Parameters can not be changed with simple symbols after calling the program.
- * ./TRIFICSimulation <collision file> | ./csv2h2 -o example.root
+ * ./TRIFICsim <collision file> | ./csv2h2 -o example.root
  * -o : sets root file name
  * -nx/-ny : sets the bin size in x and y
  * -rx/-ry : sets the range in x and y
