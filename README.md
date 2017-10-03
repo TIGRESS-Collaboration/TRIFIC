@@ -28,7 +28,7 @@ With the TRIFICSim.cpp file tuned to the user's output preferences, the program 
 
 As described at the top of csv2h2.cpp the data output from TRIFICsim can be piped directly into csv2h2. Some command line parameter inputs are available, notably adjustment of the x and y axis ranges. A typical run of the program for PID generation would be:
 
-./TRIFICsim /home/<user>/MyCollisionFiles/* | ./csv2h2 -rx 20 -ry 20
+./TRIFICsim /home/<user>/MyCollisionFiles/* | ./csv2h2 -rx 200 -ry 200
 
 ## To-do ##
 

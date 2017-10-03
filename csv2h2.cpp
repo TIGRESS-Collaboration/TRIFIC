@@ -98,8 +98,8 @@ int main(int argc, const char* argv[]) {
 	TH2F* histo;
 
 
-	histo = new TH2F("PID","PID - Part 1 v. Part 3",xbins,minx,maxx,ybins,miny,maxy);
-	histo->SetXTitle("DE - Grids 1-3 (MeV)"); 
+	histo = new TH2F("PID","PID - Part 2 v. Part 3",xbins,minx,maxx,ybins,miny,maxy);
+	histo->SetXTitle("DE - Grids 4-6 (MeV)"); 
 	histo->SetYTitle("DE - Grids 7-10 (MeV)");
 	histo->GetXaxis()->CenterTitle();
 	histo->GetYaxis()->CenterTitle();
