@@ -14,8 +14,8 @@
 /**
  * Program Name: TRIFIC Simulation, v0
  * File: TRIFICSim.cpp
- * Last Modified By: Jonah BD
- * Date: 29/08/2017
+ * Last Modified By: Brennan Undseth
+ * Date: 2017-10-3
  * Purpose: This program is meant to take ion collision data (as simulated in TRIM) and simulate
  *	particle identification. This should be able to simulate usage of the TRIFIC detector with 
  * 	multiple isotopes of similar atomic mass number (example: Sr-94, Rb-94, and Mo-94). The 
@@ -209,22 +209,23 @@ float printValues(istream& srimCollisionDataSource, string isotopeName[], float 
 	}	
 	
 	// LOOP PRINTS ISOTOPE BY ISOTOPE VALUES; FOR BRAGG PLOTS
-	//printf("\nBragg for %s-%.0f\n\n", isotopeName[*isotopeCountP-1].c_str(), ceil(isotopeMass[*isotopeCountP-1]));
-	//for (int i = 1; i < numGrids; i+=2) {
+	/*
+	printf("\nBragg for %s-%.0f\n\n", isotopeName[*isotopeCountP-1].c_str(), ceil(isotopeMass[*isotopeCountP-1]));
+	for (int i = 1; i < numGrids; i+=2) {
 
-	// 	float collected = 0;
+	 	float collected = 0;
 		
-	//	for (int j = *totalIonsP+1; j < *totalIonsP+ionNum[*isotopeCountP]+1; j++) {
+		for (int j = *totalIonsP+1; j < *totalIonsP+ionNum[*isotopeCountP]+1; j++) {
 	
-	//		collected += (collectionRegions[i][j] + collectionRegions[i+1][j]);
+			collected += (collectionRegions[i][j] + collectionRegions[i+1][j]);
 
-	//	} 
+		} 
 		
 		// prints the inner signal grid collection from 1 to (numGrids-1)/2
-	//	printf("%4.2f\n", (i+1)/2, collected);	
+		printf("%4.2f\n", (i+1)/2, collected);	
 
-	//}	
-
+	}	
+	*/
 }
 
 int main(int argc, char* argv[]) {
