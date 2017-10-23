@@ -201,7 +201,7 @@ float printValues(istream& srimCollisionDataSource, string isotopeName[], float 
 	//	printf("%4.2f, %4.2f\n", firstPart, secondPart);
 		
 		// PRINT GRIDS 1-3 V. 7-10
-		printf("%4.2f, %4.2f\n", firstPart, thirdPart);
+	//	printf("%4.2f, %4.2f\n", firstPart, thirdPart);
 
 		// PRINT GRIDS 4-6 V. 7-10
 	//	printf("%4.2f, %4.2f\n", secondPart, thirdPart);
@@ -209,7 +209,7 @@ float printValues(istream& srimCollisionDataSource, string isotopeName[], float 
 	}	
 	
 	// LOOP PRINTS ISOTOPE BY ISOTOPE VALUES; FOR BRAGG PLOTS
-	/*
+	
 	printf("\nBragg for %s-%.0f\n\n", isotopeName[*isotopeCountP-1].c_str(), ceil(isotopeMass[*isotopeCountP-1]));
 	for (int i = 1; i < numGrids; i+=2) {
 
@@ -225,7 +225,7 @@ float printValues(istream& srimCollisionDataSource, string isotopeName[], float 
 		printf("%4.2f\n", (i+1)/2, collected);	
 
 	}	
-	*/
+	
 }
 
 int main(int argc, char* argv[]) {
