@@ -215,16 +215,19 @@ def PIDPlot(saveto,fs,bins=50,Xrange=0,Yrange=0):
 	toplot = []
 	for f in fs:
 		toplot.append(os.path.join(homedir,'TRIFIC','TRIMDATA',saveto,'OUT',f))
-	tocall12 = './TsPID12 '
-	tocall13 = './TsPID13 '
-	tocall23 = './TsPID23 '
+	tocall12 = './TRIFICsim 12 '
+	tocall13 = './TRIFICsim 13 '
+	tocall23 = './TRIFICsim 23 '
 	for f in toplot:
 		tocall12 = tocall12+f+' '
 		tocall13 = tocall13+f+' '
 		tocall23 = tocall23+f+' '
-	tocall12 = tocall12+'| ./rp12 -nx '+str(bins)+' -ny '+str(bins)
-	tocall13 = tocall13+'| ./rp13 -nx '+str(bins)+' -ny '+str(bins)
-	tocall23 = tocall23+'| ./rp23 -nx '+str(bins)+' -ny '+str(bins)
+	#tocall12 = tocall12+'| ./rp12 -nx '+str(bins)+' -ny '+str(bins)
+	#tocall13 = tocall13+'| ./rp13 -nx '+str(bins)+' -ny '+str(bins)
+	#tocall23 = tocall23+'| ./rp23 -nx '+str(bins)+' -ny '+str(bins)
+	print(tocall12)
+	print(tocall13)
+	print(tocall23)
 	subprocess.Popen(tocall12,shell=True)
 	subprocess.Popen(tocall13,shell=True)
 	subprocess.Popen(tocall23,shell=True)
