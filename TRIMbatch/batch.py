@@ -1,8 +1,8 @@
 import os
 import pathlib
 import subprocess
-from compoundparse import compoundparse
-from ionparse import ionparse
+from . import compoundparse
+from . import ionparse
 
 class Batch:
 	def __init__(self,saveto,ion,mass,energy,number,angle=0,corr=0,autosave=10000):
@@ -21,9 +21,10 @@ class Batch:
 		self.corr = corr
 		self.autosave = autosave
 
-		self._atoms = ionparse()
-		self._compounds = compoundparse()
-
+		self._atoms = ionparse.ionparse()
+		self._compounds = compoundparse.compoundparse()
+		
+		self._homedir = os.path.expanduser('~')
 		self._fnames = [] # stores file names written using data from this object
 
 		# create empty dictionary for target layers (not a list so that layers may be defined out of order)
@@ -104,7 +105,7 @@ class Batch:
 		# print(*objects, sep=' ', end='\n', file=sys.stdout, flush=False) from docs
 
 		# create directories if they do not already exist
-		savetodir = os.path.join(self._homedir,'TRIMDATA',self.saveto)
+		savetodir = os.path.join(self._homedir,'TRIFIC','TRIMDATA',self.saveto)
 		pathlib.Path(os.path.join(savetodir,'IN')).mkdir(parents=True, exist_ok=True)
 		pathlib.Path(os.path.join(savetodir,'OUT')).mkdir(parents=True, exist_ok=True)
 		# write to a file given ion information; will overwrite any existing file with the same name (same ion data)
@@ -213,7 +214,7 @@ def PIDPlot(saveto,fs,bins=50,Xrange=0,Yrange=0):
 	os.chdir(os.path.join(homedir,'TRIFIC'))
 	toplot = []
 	for f in fs:
-		toplot.append(os.path.join(homedir,'TRIFIC','TRIMDATA',saveto,'OUT',f)
+		toplot.append(os.path.join(homedir,'TRIFIC','TRIMDATA',saveto,'OUT',f))
 	tocall12 = './TsPID12 '
 	tocall13 = './TsPID13 '
 	tocall23 = './TsPID23 '
