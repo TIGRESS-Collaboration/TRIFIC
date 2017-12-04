@@ -1,7 +1,8 @@
 import os
-import pickle
 import pathlib
 import subprocess
+from compoundparse import compoundparse
+from ionparse import ionparse
 
 class Batch:
 	def __init__(self,saveto,ion,mass,energy,number,angle=0,corr=0,autosave=10000):
@@ -20,10 +21,8 @@ class Batch:
 		self.corr = corr
 		self.autosave = autosave
 
-		self._homedir = os.path.expanduser('~')
-		os.chdir(os.path.join(self._homedir,'TRIFIC','TRIMbatch'))
-		self._atoms = pickle.load(open('atoms.p','rb'))
-		self._compounds = pickle.load(open('compounds.p','rb'))
+		self._atoms = ionparse()
+		self._compounds = compoundparse()
 
 		self._fnames = [] # stores file names written using data from this object
 
@@ -35,7 +34,7 @@ class Batch:
 		# gui, or don't define at all which works fine for most simulations; could also hardcode this into the compound parser), gas bool (True if the layer is gaseous),
 		# and compound bool (False if we are using a single atom layer that is not already given in the compount directory; can hardcode more compounds in the compound
 		# parser as necessary as has already been done for CF4)
-		self._layers[str(lnumber)]=	{
+	 	self._layers[str(lnumber)]=	{
 					'Name': lname,
 					'Width': width,
 					'Density': density,
@@ -190,15 +189,42 @@ def Sim(saveto,fs):
 
 	for f in fs:
         	filetosim = f
-        	tocopy = os.path.join(homedir,'TRIMDATA',saveto,'IN',filetosim)
+        	tocopy = os.path.join(homedir,'TRIFIC','TRIMDATA',saveto,'IN',filetosim)
         	topaste = os.path.join(homedir,'.wine','drive_c','Program Files (x86)','SRIM-2013','TRIM.IN')
         	subprocess.call(['cp',tocopy,topaste])
         	subprocess.call(['wine','TRIM.exe'])
         	copyto = os.path.join(homedir,'.wine','drive_c','Program Files (x86)','SRIM-2013','SRIM Outputs','COLLISON.txt')
-       		pasteto = os.path.join(homedir,'TRIMDATA',saveto,'OUT',filetosim)
+       		pasteto = os.path.join(homedir,'TRIFIC','TRIMDATA',saveto,'OUT',filetosim)
         	subprocess.call(['cp',copyto,pasteto])
 
-def Plot(saveto,fs,force=False):
-	# plot file names given; won't sim unless forced to or files don't exist
-	pass
+def PIDPlot(saveto,fs,bins=50,Xrange=0,Yrange=0):
+	# Creates PID plots given a list of file names and a location where to look for them.
+	# Takes up to 4 additional arguments to be passed to the plotter (args are checked to disallow potential shell insertion).
+	# grids arg should be '12', '13', or '23' depending on how the anode signals in TRIFIC are collected.
+	# bins arg determines how many bins exist in the x and y axes of the histogram. 50-100 is often a reasonable default.
+	# Setting Xrange (Yrange) forces the x-axis (y-axis) range of the plot. 0 (default) lets the plotter pick a reasonable value given the range of the data.
+	homedir = os.path.expanduser('~')
+	if saveto not in os.listdir(os.path.join(homedir,'TRIFIC','TRIMDATA')):
+		raise ValueError('Given directory not found')
+	elif any(f not in os.listdir(os.path.join(homedir,'TRIFIC','TRIMDATA',saveto,'OUT')) for f in fs):
+		raise ValueError('File not found in given directory')
+	elif any(isinstance(kwarg,int) is False for kwarg in [bins,Xrange,Yrange]):
+		raise ValueError('Plotter arguments (bins, ranges) must be integers')
+	os.chdir(os.path.join(homedir,'TRIFIC'))
+	toplot = []
+	for f in fs:
+		toplot.append(os.path.join(homedir,'TRIFIC','TRIMDATA',saveto,'OUT',f)
+	tocall12 = './TsPID12 '
+	tocall13 = './TsPID13 '
+	tocall23 = './TsPID23 '
+	for f in toplot:
+		tocall12 = tocall12+f+' '
+		tocall13 = tocall13+f+' '
+		tocall23 = tocall23+f+' '
+	tocall12 = tocall12+'| ./rp12 -nx '+str(bins)+' -ny '+str(bins)
+	tocall13 = tocall13+'| ./rp13 -nx '+str(bins)+' -ny '+str(bins)
+	tocall23 = tocall23+'| ./rp23 -nx '+str(bins)+' -ny '+str(bins)
+	subprocess.Popen(tocall12,shell=True)
+	subprocess.Popen(tocall13,shell=True)
+	subprocess.Popen(tocall23,shell=True)
 
