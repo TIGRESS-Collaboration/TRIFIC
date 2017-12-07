@@ -3,7 +3,7 @@
  * To run program, use following command:
  *		cat fileName (multiple files) |./TRIFICsim
  * or:
- *		./TRIFICsim fileName (multiple files)
+ *		./TRIFICsim 12 fileName (multiple files) (12,13,23 indicates grid regions to print)
  * Can handle SRIM collision data from multiple isotopes
  * Ability to change (multiple) parameters from the command line:
  *		./TRIFICsim --parameter value fileName

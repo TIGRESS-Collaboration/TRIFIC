@@ -13,8 +13,8 @@
 
 /**
  * File: csv2h2.cpp
- * Last Modified By: Jonah Berean
- * Date: 29/08/2017
+ * Last Modified By: Brennan Undseth
+ * Date: 2017-12-06
  * Purpose: This program simply pulls the data from the output of the TRIFIC simulation and plots
  * 	on a histogram using ROOT.
 **/
@@ -48,6 +48,7 @@ float maxy = 5000; // Some default values which may be adjusted later
 int xbins  = 5000;
 int ybins  = 5000;
 int i = 0;
+int gridnumber = 0;
 string name = "graph.root";
 
 int main(int argc, const char* argv[]) { 
@@ -86,7 +87,11 @@ int main(int argc, const char* argv[]) {
 				i++;
 				maxy = atof(argv[i]);
 			}
-
+			if (strcmp(argv[i], "-gn") == 0)
+			{
+				i++;
+				gridnumber = atoi(argv[i]);
+			}
 			i++;	
 		}
 	}
@@ -97,10 +102,21 @@ int main(int argc, const char* argv[]) {
 	TCanvas *c1 = new TCanvas("c1","TRIFIC Simulation",200,10,700,500);
 	TH2F* histo;
 
-
-	histo = new TH2F("PID","PID - Part 2 v. Part 3",xbins,minx,maxx,ybins,miny,maxy);
-	histo->SetXTitle("DE - Grids 1-3 (MeV)"); 
-	histo->SetYTitle("DE - Grids 4-6 (MeV)");
+	// ###### change title and axes based on gridnumber
+	if (gridnumber == 12) {
+		histo = new TH2F("PID","PID - Part 2 v. Part 1",xbins,minx,maxx,ybins,miny,maxy);
+		histo->SetXTitle("DE - Grids Part 1 (MeV)");
+		histo->SetYTitle("DE - Grids Part 2 (MeV)");
+	} else if (gridnumber == 13) {
+		histo = new TH2F("PID","PID - Part 3 v. Part 1",xbins,minx,maxx,ybins,miny,maxy);
+		histo->SetXTitle("DE - Grids Part 1 (MeV)");
+		histo->SetYTitle("DE - Grids Part 3 (MeV)");
+	} else {
+		// will be "23"; this input is checked in Python wrapper
+		histo = new TH2F("PID","PID = Part 3 v. Part 2",xbins,minx,maxx,ybins,miny,maxy);
+		histo->SetXTitle("DE - Grids Part 3 (MeV)");
+		histo->SetYTitle("DE - Grids Part 3 (MeV)");
+	}
 	histo->GetXaxis()->CenterTitle();
 	histo->GetYaxis()->CenterTitle();
 	
