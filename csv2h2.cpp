@@ -114,7 +114,7 @@ int main(int argc, const char* argv[]) {
 	} else {
 		// will be "23"; this input is checked in Python wrapper
 		histo = new TH2F("PID","PID = Part 3 v. Part 2",xbins,minx,maxx,ybins,miny,maxy);
-		histo->SetXTitle("DE - Grids Part 3 (MeV)");
+		histo->SetXTitle("DE - Grids Part 2 (MeV)");
 		histo->SetYTitle("DE - Grids Part 3 (MeV)");
 	}
 	histo->GetXaxis()->CenterTitle();

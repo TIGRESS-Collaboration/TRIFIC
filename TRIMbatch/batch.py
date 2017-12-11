@@ -191,6 +191,7 @@ class Batch:
 				self._layermakeup.append(len(self._layers[str(i)]['Atom List']))
 			if self._layers[str(i)]['Pressure'] != 0:
 				self._layers[str(i)]['Density'] *= self._layers[str(i)]['Pressure']/760
+				self._layers[str(i)]['Pressure'] = 0 # set back to 0 so density is not scaled for future ions
 		self._nolayeratoms = sum(self._layermakeup)
 		# compile atomic data for layers
 		self._targetatoms = [] # list of dictionaries for each atom, indexed by position in layers

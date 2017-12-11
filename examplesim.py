@@ -22,5 +22,5 @@ batch.nextIon('Rb',80,429600,20)
 Sim(nameofexp,batch.batchFiles())
 
 # Generate PID plots for TRIFIC for the simulations.
-PIDPlot(nameofexp,batch.batchFiles(),Xrange=250,Yrange=250,Xbins=60,Ybins=60)
+PIDPlot(nameofexp,batch.batchFiles(),Xrange=200,Yrange=200,Xbins=100,Ybins=100)
 
