@@ -21,6 +21,10 @@ batch.nextIon('Rb',80,429600,20)
 # Simulate all of the input files our object created.
 Sim(nameofexp,batch.batchFiles())
 
-# Generate PID plots for TRIFIC for the simulations.
+# Generate PID plots for TRIFIC for the simulations. Will block until user input and close generated histograms responsibly.
 PIDPlot(nameofexp,batch.batchFiles(),Xrange=200,Yrange=200,Xbins=100,Ybins=100)
 
+# Show all files we just created/simulated/processed.
+print("Files generated:")
+for f in getFiles(nameofexp):
+	print(f)

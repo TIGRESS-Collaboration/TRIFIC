@@ -340,6 +340,10 @@ def PIDPlot(saveto,fs,Xrange=0,Yrange=0,Xbins=50,Ybins=50):
 	subprocess.Popen(tocall12,shell=True)
 	subprocess.Popen(tocall13,shell=True)
 	subprocess.Popen(tocall23,shell=True)
+	
+	# block and then kill histograms if user did not close them properly
+	input("Press Enter to quit...")
+	subprocess.run("killall csv2h2",shell=True)
 
 def getFiles(saveto):
 	# returns names of files in existing simulation directory for ease of plotting already simulated ions
