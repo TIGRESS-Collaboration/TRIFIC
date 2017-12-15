@@ -6,13 +6,13 @@ The TRIFICsim program takes TRIM collision file(s) as input, and outputs deposit
 
 The csv2h2 file is used to process data output by TRIFICsim and create 2-D PID plots.
 
-TRIMIN.sav contains an example TRIM input file that may be useful for those new to simulating ions in TRIFIC. To load it, first open SRIM (installation described below). Copy the file to the 'SRIM Restore' sub-directory within the main SRIM-2013 directory. Then open the TRIM program and select 'TRIM Calculation'. Selecting 'Resume saved TRIM calc.' should resotre the inputs from the TRIMIN.sav file to the GUI. Then select 'Resume Saved TRIM' which should resume a completed simulation. Save nothing, and exit the results window. Now, back in the TRIM input GUI, adjustments to the parameters can be made. Familiarity with the TRIM program will be very beneficial for TRIFIC simulations (go to srim.org for all the information you could ever need), but the TRIMbatch Python module will greatly reduce any need to use the GUI.
+TRIMIN.sav contains an example TRIM input file that may be useful for those new to simulating ions in TRIFIC. To load it, first open SRIM (installation described below). Copy the file to the 'SRIM Restore' sub-directory within the main SRIM-2013 directory. Then open the TRIM program and select 'TRIM Calculation'. Selecting 'Resume saved TRIM calc.' should restore the inputs from the TRIMIN.sav file to the GUI. Then select 'Resume Saved TRIM' which should resume a completed simulation. Save nothing, and exit the results window. Now, back in the TRIM input GUI, adjustments to the parameters can be made. Familiarity with the TRIM program will be very beneficial for TRIFIC simulations (go to srim.org for all the information you could ever need), but the TRIMbatch Python module will greatly reduce any need to use the GUI.
 
 install-wine-i686-centos7.sh is an extremely useful shell script for getting 32-bit wine to run on a machine running CentOS 7 which is needed for the Python interface.
 
 The make file compiles the C++ code for convenience.
 
-examplesim.py contains an example script for simulating 4 ions in TRIFIC using the Python. For most future simulations, it should be sufficient to copy and paste the code, changing the necessary parameters and executing. A complete explination lives in the tutorial below.
+examplesim.py contains an example script for simulating 4 ions in TRIFIC using the Python. For most future simulations, it should be sufficient to copy and paste the code, changing the necessary parameters and executing. A complete walkthrough exists in the tutorial below.
 
 The TRIMbatch module contains scripts for parsing TRIM's default atom and compound directories as well as the interface used for running TRIM in batch mode automatically. It requires only standard Python 3 modules.
 
@@ -67,8 +67,11 @@ Now we can get SRIM-2013.
 In the Program Files (x86) directory, make a new directory for SRIM-2013. SRIM-2013 (Standard) was downloaded from srim.org and then secure copied to a new .wine/drive_c/Program Files (x86)/SRIM-2013 directory, changing the self-extracting zip file to .exe.
 
 mkdir SRIM-2013
+
 scp SRIM-2013-Std.e bundseth@smilodon:/home/bundseth/SRIM-2013.exe
+
 ssh -Y bundseth@smilodon
+
 mv SRIM-2013.exe /home/bundseth/.wine/drive_c/Program\ Files\ \(x86\)/SRIM-2013/SRIM-2013.exe
 
 In the SRIM-2013 directory, run:
@@ -86,11 +89,13 @@ Note that the first couple of times this is done, a readme will pop up. Close th
 If editing the VERSION file, there should be no problems as long as the file is not empty. If it is, enter:
 
 """
+
 SRIM-2008.04
 
 SRIM software version.
 
 See VERSION.rtf for details.
+
 """
 
 For the 2013 version, change 2008.04 to 2013.00. This is one possible cause of TRIM crashing on execution.
@@ -113,14 +118,19 @@ Add this line to the bottom of ~/.bashrc. If this is not done (manually or other
 CentOS 7 comes with Python 2, but Python 3 is good practice. More importantly, the interface will absolutely not work with Python 2. As root:
 
 yum update
+
 yum install yum-utils https://centos7.iuscommunity.org/ius-release.rpm python 36u python36u-pip python36u-devel
 
 If continuing to develop the interface, setting up a virtual environment is a good idea.
 
 cd
+
 mkdir environments
+
 cd environments
+
 python3.6 -m venv TRIFIC
+
 source environments/TRIFIC/bin/activate
 
 For the current version of the interface, only standard modules are used.
@@ -208,17 +218,18 @@ The method batchFiles() will return a list of files created using the Batch obje
 
 Simulations are run in groups using:
 
-Sim(saveto,fs)
+Sim(dirname,fs)
 
-'saveto' is the name of the directory where the input files to simulate live, the same argument that was used to initialize Batch objects. 'fs' is a list of files that may be given by the user, or passed using the batchFiles() method or the getFiles() function. TRIM will be run using wine, and simulation windows will open and close automatically for each ion to be simulated. The function will take care of saving output files to the 'saveto' directory given.
+'dirname' is the name of the directory (within TRIFIC/TRIMDATA) where the input files to simulate live, the same argument that was used to initialize Batch objects. 'fs' is a list of files that may be given by the user, or passed using the batchFiles() method or the getFiles() function. TRIM will be run using wine, and simulation windows will open and close automatically for each ion to be simulated. The function will take care of saving output files to the 'saveto' directory given.
 
 The only plotting function is a wrapper for old C++ code used to make PID histograms:
 
-PIDPlot(saveto,fs,Xrange=0,Yrange=0,Xbins=50,Ybins=50)
+PIDPlot(dirname,fs,Xrange=0,Yrange=0,Xbins=50,Ybins=50)
 
-'saveto' and 'fs' are a location and list of files to plot, as before. The latter four arguments are passed to C++ and give ranges and bin sizes for the generated histograms. The C++ is hardcoded for 3 grid regions within TRIFIC, and therefore 3 PID plots are generated (each one comparing 2 grid regions) simultaneously. The function will block until user input is received so that ROOT is closed responsibly.
+'dirname' and 'fs' are a location and list of files to plot, as before. The latter four arguments are passed to C++ and give ranges and bin sizes for the generated histograms. The C++ is hardcoded for 3 grid regions within TRIFIC, and therefore 3 PID plots are generated (each one comparing 2 grid regions) simultaneously. The function will block until user input is received so that ROOT is closed responsibly.
 
-getFiles(saveto) is a simple function that returns all simulation outputs for the given directory. Its intended use is for looking up files for generating plots without having to re-simulate or manually check what ions have been simulated.
+getFiles(dirname)
+A simple function that returns all simulation outputs for the given directory. Its intended use is for looking up files for generating plots without having to re-simulate or manually check what ions have been simulated.
 
 ## Development Notes ##
 
