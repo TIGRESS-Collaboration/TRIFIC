@@ -160,9 +160,10 @@ batch = Batch(nameofexp,'Ga',80,472800,20)
 Next, we need to define the target data. We use the addTargetLayer method, giving the layer number (in order, starting with 1), then the name of the compound/atom that makes up the target (more on this later), the width and corresponding unit, density/pressure information, and whether or not the layer is gaseous. For TRIFIC, the ions will travel through a Mylar window with a thickness on the order of microns. TRIM knows what Mylar is, and we omit any density information as a way to let the program know to use the TRIM default density (we know from the GUI that this density is accurate). Once through the window, the ions will pass through up to ~30cm of CF4 gas. Unlike Mylar, TRIM's info for carbon tetrafluoride is not very accurate, so we have defined our own compound in the comopund parser with the name 'CF4' (this is easy to do and explained below). When we defined it, we gave a density at STP that we believe is accurate enough for reference, and instead of calculating some small density by hand, the interface lets us give the pressure of a gas in Torr. It will take care of scaling the known value as an ideal gas.
 
 batch.addTargetLayer(1,'Mylar',width=25,unit='um',gas=False)
+
 batch.addTargetLayer(2,'CF4',width=30,unit='cm',gas=True)
 
-There are a lot of ways ions and target layers may be defined. The program will always use user-defined parameters above defaults, so making use of all the keyword arguments will give the most control. The program is smart enough to know what input combinations absolutely will not work and will give error messages accordingly. However, there are many ways to input garbage that TRIM will roll with, so double check what you feed the software if you want the results to make sense.
+There are a lot of ways ions and target layers may be defined. The program will always use user-defined parameters (if given) above defaults, so making use of all the keyword arguments will give the most control. The program is smart enough to know what input combinations absolutely will not work and will give error messages accordingly. However, there are many ways to input garbage that TRIM will roll with, so double check what you feed the software if you want the results to make sense.
 
 Once our target is defined, we tell the program to create a batch file using the information we have given. This is done by calling the makeBatch method. It will also throw error messages if anything seems awry with the parameters it has been given.
 
@@ -171,7 +172,9 @@ batch.makeBatch()
 For simulations pertaining to TRIFIC, we are interested in firing different ions through the same target. Rather than creating a new object and re-entering redundant information, we can tell the program to hotswap the ion and generate a new simulation file with a single method. Just like when initializing the Batch object, we simply give the method new ion parameters to work with. Note that changes to the target layer are allowed and can be changed in between generating input files. Calling the nextIon method will produce a batch file for the given ion using the current target info.
 
 batch.nextIon('Se',80,452000,20)
+
 batch.nextIon('Kr',80,437600,20)
+
 batch.nextIon('Rb',80,429600,20)
 
 Now that all of our input files are prepared, we are ready to let TRIM do its thing. We call Sim() to do this, and give it the name of the dataset we're working with along with a list of files to simulate. Our Batch object keeps track of the files it generates, and these are available on demand using the batchFiles method.
@@ -186,7 +189,7 @@ The example script covers everything needed for TRIFIC simulations, but doesn't 
 
 The full Batch object initialization is as follows:
 
-__init__(self,saveto,ion,mass,energy,number,angle=0,corr=0,autosave=10000):
+__init__(self,saveto,ion,mass,energy,number,angle=0,corr=0,autosave=10000)
 
 The Batch object must be initialized with an ion and save location for a) it to know where to write .IN files and save TRIM outputs, b) your future reference of these files. The ion data is straightforward. 'ion' is the chemical symbol for the element, 'mass' is given in amu, 'energy' is given in keV, and 'number' is the number of ions we would like to simulate. For example 20 Gallium 80 ions @ 5.91MeV/u is input as:
 
@@ -196,11 +199,11 @@ The arguments correspond to the parameters that are typically filled in at the t
 
 Target layers are added using the addTargetLayer() method:
 
-addTargetLayer(self,lnumber,lname,width=0,unit='Ang',density=0,pressure=0,corr=1,gas=0,compound=True)
+batch.addTargetLayer(self,lnumber,lname,width=0,unit='Ang',density=0,pressure=0,corr=1,gas=0,compound=True)
 
-Every target is given a number corresponding to its position in the layer stack, with 1 being the first layer. No duplicates or gaps in the stack are allowed and an error will be thrown if detected. Layers can be defined and changed out of order without having to create a new object. An example where this is useful is finding the ideal operating pressure of TRIFIC (or any IC) where, instead of re-entering a bunch of parameters, only the gas layer could be changed so that a sweep over several pressures could be done in a single script. Layers may either be single atoms or compounds. If an atom, give the chemical symbol (ie. 'Ar' for Argon gas). If a compound, it must be one existing in either the default TRIM directory or be user defined in the parser (see below). The exact name must be used, otherwise an error will be raised. A good approach for using an unfamiliar compound in the TRIM directory would be to copy and paste the name given in the TRIM GUI. The 'width' may be given in Angstrom ('Ang'), or in 'cm' or 'um' by changing the 'unit' argument. There are different ways to input the density depending on how much the user knows about the material and how much they have faith in TRIM's defaults (which are usually ok but sometimes not). If the target layer is not gaseous, a 'density' may be given in g/cm3, or not given if the user wishes to keep the TRIM default. This is usually fine for very thin layers ie. micron-thick Mylar windows. If the target is gaseous, a 'density' in g/cm3 or a 'pressure' in Torr may be given. If both are defined, the density will be used. The pressure will take the default gas density (assumed to be given for 760 torr) and scale it according to the ideal gas law. This is convenient since gas densities in g/cm3 are very small and tedious to calculate, but this should only be used when the user has checked the default gas density and understands the assumptions being made. Give the density in g/cm3 if you want absolute control. The state MUST be given with either 'gas'=True or 'gas'=False. The program will not make any assumptions about the state of a layer but does the courtesy of not running if a layer's state is not given. This avoids TRIM spitting out garbage. A correction 'corr' may be given, but for quick calculations the default is ok. Full disclosure, I *think* TRIM calculates these on-the-fly during normal GUI input, or maybe I just can't find them in the files. If you want to use compound corrections, the best approach would be to look up the ion/target layer compound correction in the GUI can copy/paste the number to the script. Finally, a 'compound'=False argument is needed if the user wants to use a single atom layer. This is because some elements occupy both atom and compound directories, and this clarifies where to look. 
+Every target is given a number corresponding to its position in the layer stack, with 1 being the first layer. No duplicates or gaps in the stack are allowed and an error will be thrown if detected. Layers can be defined and changed out of order without having to create a new object. An example where this is useful is finding the ideal operating pressure of TRIFIC (or any IC) where, instead of re-entering a bunch of parameters, only the gas layer could be changed so that a sweep over several pressures could be done in a single script. Layers may either be single atoms or compounds. If an atom, give the chemical symbol (ie. 'Ar' for Argon gas). If a compound, it must be one existing in either the default TRIM directory or be user defined in the parser (see below). The exact name must be used, otherwise an error will be raised. A good approach for using an unfamiliar compound in the TRIM directory would be to copy and paste the name given in the TRIM GUI. The 'width' may be given in Angstrom ('Ang'), or in 'cm' or 'um' by changing the 'unit' argument. There are different ways to input the density depending on how much the user knows about the material and how much they have faith in TRIM's defaults (which are usually ok but sometimes not). If the target layer is not gaseous, a 'density' may be given in g/cm3, or not given if the user wishes to keep the TRIM default. This is usually fine for very thin layers ie. micron-thick Mylar windows. If the target is gaseous, a 'density' in g/cm3 or a 'pressure' in Torr may be given. If both are defined, the density will be used. If only a pressure is given, the program will take the default gas density (assumed to be given for 760 torr) and scale it according to the ideal gas law. This is convenient since gas densities in g/cm3 are very small and tedious to calculate, but this should only be used when the user has checked the default gas density and understands the assumptions being made. Give the density in g/cm3 if you want absolute control. The state MUST be given with either 'gas'=True or 'gas'=False. The program will not make any assumptions about the state of a layer but has the courtesy to not run if a layer's state is not given. This avoids TRIM spitting out garbage. A correction 'corr' may be given, but for quick calculations the default is ok. Full disclosure, I *think* TRIM calculates these on-the-fly during normal GUI input, or maybe I just can't find them in the files. If you want to use compound corrections, the best approach would be to look up the ion/target layer compound correction in the GUI can copy/paste the number to the script. Finally, a 'compound'=False argument is needed if the user wants to use a single atom layer. This is because some elements occupy both atom and compound directories, and this clarifies where to look. 
 
-If a compound does not exist in the TRIM default directory, one may be easily made by editing the compoundparse.py parser within the TRIMbatch module. At the bottom is a clearly marked section and a template to use. 'CF4' is given as an example. Compounds are stored in a structure where the name is a key for a dictionary containing 'Density' and 'Stoich' values. The density should be what one would expect at STP. The stoichimetry is given as a list of tuples, each of the form ['atomic number','%']. For example, CF4 is defined by adding the line:
+If a compound does not exist in the TRIM default directory, one may be easily made by editing the compoundparse.py parser within the TRIMbatch module. At the bottom is a clearly marked section and a template to use. 'CF4' is given as an example. Compounds are stored in a structure where the name is a key for a dictionary containing 'Density' and 'Stoich' keys. The density should be what one would expect at STP. The stoichimetry is given as a list of tuples, each of the form ['atomic number','%']. For example, CF4 is defined by adding the line:
 
 compounds['CF4'] = {'Density': 0.00372, 'Stoich': [[6,0.2],[9,0.8]]}
 
@@ -210,9 +213,11 @@ Batch files are written with the makeBatch() method, which takes no additional a
 
 The nextIon() method takes the same ion arguments as initialization:
 
-nextIon(self,ion,mass,energy,number,angle=0,corr=0,autosave=10000)
+batch.nextIon(self,ion,mass,energy,number,angle=0,corr=0,autosave=10000)
 
 It will use the target information currently known to the object and automatically write a TRIM input file with the new ion data.
+
+batch.batchFiles()
 
 The method batchFiles() will return a list of files created using the Batch object. This is useful for passing files to the simulation and plotting functions.
 
@@ -229,6 +234,7 @@ PIDPlot(dirname,fs,Xrange=0,Yrange=0,Xbins=50,Ybins=50)
 'dirname' and 'fs' are a location and list of files to plot, as before. The latter four arguments are passed to C++ and give ranges and bin sizes for the generated histograms. The C++ is hardcoded for 3 grid regions within TRIFIC, and therefore 3 PID plots are generated (each one comparing 2 grid regions) simultaneously. The function will block until user input is received so that ROOT is closed responsibly.
 
 getFiles(dirname)
+
 A simple function that returns all simulation outputs for the given directory. Its intended use is for looking up files for generating plots without having to re-simulate or manually check what ions have been simulated.
 
 ## Development Notes ##
@@ -239,17 +245,21 @@ PID plots may be generated without using the Python interface at all provided th
 
 ./TRIFICsim 12 /home/bundseth/... /home/bundseth/... * | ./csv2h2 -nx 50 -ny 50 -rx 200 -ry 200 -gn 12
 
-This will plot the PID histogram for grid regions 1 & 2. Change the occurences of '12' above to either '13' or '23' for the other two grid regions. As many TRIM output files may be given to TRIFICsim as desired, provided the full path is given and spaces separate the files. csv2h2 is the plotting code and takes -nx and -ny arguments for number of bins and -rx and -ry for range.
+TRIFICsim calculates the cumulative energy lost per ion for the grid regions as defined by the constants in the program. It outputs data for each ion of each file given and is piped to csv2h2, which takes care of plotting a ROOT histogram.
 
-The TRIFICsim program is also capable of generating values needed for Bragg curves, but no dedicated plotter exists. In the past, they have been made by copying the output of:
+The above will plot the PID histogram for grid regions 1 & 2. Change the occurences of '12' above to either '13' or '23' for the other two grid regions. As many TRIM output files may be given to TRIFICsim as desired, provided the full path is given and spaces separate the files. csv2h2 is the plotting code and takes -nx and -ny arguments for number of bins and -rx and -ry for range.
+
+The TRIFICsim program is also capable of generating values needed for Bragg curves, but no dedicated plotter exists. In the past, they have been made by copying the output of the following to Excel: 
 
 cat ./TRIFICsim /home/bundseth/... /home/bundseth/... *
 
 TRIFICsim.cpp must be compiled with the proper lines uncommented to receive the proper output. Note the constants defined at the start of the program. numGrids, spacing, windowToWires, may all need to be adjusted depending upon the mounted configuration. Note the structure of the printValues() function. The user needs to comment/uncomment the sections that correspond to the value generation they desire. The possible iterations are many, but they all center around the 2-D collectionRegions array. This array contains the summed energy losses by grid region (first array dimension), for every ion simulated (second array dimension). Refer to the processSRIMData() function for reference to this array construction. See TRIFIC ELog post with ID 50 for examples of PID and Bragg plots.
 
-The process for generating Bragg plots is as cumbersome as generating EVERYTHING was before the interface was made. Making a plotter for Bragg curves is something to do moving forward. The C++ code for PID plots is also hard-coded and should be made more versatile. The wrapper currently part of the interface is only a temporary solution.
+The process for generating Bragg plots is as cumbersome as generating EVERYTHING was before the interface was made. Making a plotter for Bragg curves is something to do moving forward. The C++ code for PID plots is also hard-coded and should be made more versatile. The wrapper currently existing in the interface is only a temporary solution.
 
 Another common piece of information we use the simulations for is to find an operating pressure for the chamber. Ideally, we'd like the farthest-travelling ion to stop just before the end of the ~28cm TRIFIC chamber. Writing a function to sweep over a pressure range and return the optimal pressure is something else to do.
+
+I have made the program responsible for all file naming to ease user input. Currently, there may be only one ion of a given mass and energy per directory in TRIMDATA. Re-creating a batch file with the same ion parameters will overwrite the original input file, and simulating will overwrite any simulation output for the ion. There are definitely cases where this is not ideal, and adding some extra keyword arguments to allow multiple ions (possibly with slighly different target parameters) per experiment would be a useful addition.
 
 Some other thoughts left behind, pertaining to the simulations & analysis:
 
