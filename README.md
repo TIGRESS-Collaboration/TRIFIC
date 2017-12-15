@@ -176,53 +176,76 @@ The example script covers everything needed for TRIFIC simulations, but doesn't 
 
 The full Batch object initialization is as follows:
 
+__init__(self,saveto,ion,mass,energy,number,angle=0,corr=0,autosave=10000):
 
+The Batch object must be initialized with an ion and save location for a) it to know where to write .IN files and save TRIM outputs, b) your future reference of these files. The ion data is straightforward. 'ion' is the chemical symbol for the element, 'mass' is given in amu, 'energy' is given in keV, and 'number' is the number of ions we would like to simulate. For example 20 Gallium 80 ions @ 5.91MeV/u is input as:
 
-The arguments correspond to the parameters that would be filled in near the top of the TRIM GUI. 
+Batch('save location','Ga',80,472800,20)
 
+The arguments correspond to the parameters that are typically filled in at the top of the TRIM GUI. 'angle' can be changed if the direction of the travelling ions with respect to the target is to be changed. 'corr' is an ion correction with 0 corresponding to no correction (this is fine for TRIFIC simulations). 'autosave' is the number of atoms after which TRIM will automatically save an intermediate output, and shouldn't have to be used. Other TRIM options relating to detail and type of output created are hardcoded for the needs of TRIFIC but could easily be implemented as additional arguments in the future.
 
+Target layers are added using the addTargetLayer() method:
+
+addTargetLayer(self,lnumber,lname,width=0,unit='Ang',density=0,pressure=0,corr=1,gas=0,compound=True)
+
+Every target is given a number corresponding to its position in the layer stack, with 1 being the first layer. No duplicates or gaps in the stack are allowed and an error will be thrown if detected. Layers can be defined and changed out of order without having to create a new object. An example where this is useful is finding the ideal operating pressure of TRIFIC (or any IC) where, instead of re-entering a bunch of parameters, only the gas layer could be changed so that a sweep over several pressures could be done in a single script. Layers may either be single atoms or compounds. If an atom, give the chemical symbol (ie. 'Ar' for Argon gas). If a compound, it must be one existing in either the default TRIM directory or be user defined in the parser (see below). The exact name must be used, otherwise an error will be raised. A good approach for using an unfamiliar compound in the TRIM directory would be to copy and paste the name given in the TRIM GUI. The 'width' may be given in Angstrom ('Ang'), or in 'cm' or 'um' by changing the 'unit' argument. There are different ways to input the density depending on how much the user knows about the material and how much they have faith in TRIM's defaults (which are usually ok but sometimes not). If the target layer is not gaseous, a 'density' may be given in g/cm3, or not given if the user wishes to keep the TRIM default. This is usually fine for very thin layers ie. micron-thick Mylar windows. If the target is gaseous, a 'density' in g/cm3 or a 'pressure' in Torr may be given. If both are defined, the density will be used. The pressure will take the default gas density (assumed to be given for 760 torr) and scale it according to the ideal gas law. This is convenient since gas densities in g/cm3 are very small and tedious to calculate, but this should only be used when the user has checked the default gas density and understands the assumptions being made. Give the density in g/cm3 if you want absolute control. The state MUST be given with either 'gas'=True or 'gas'=False. The program will not make any assumptions about the state of a layer but does the courtesy of not running if a layer's state is not given. This avoids TRIM spitting out garbage. A correction 'corr' may be given, but for quick calculations the default is ok. Full disclosure, I *think* TRIM calculates these on-the-fly during normal GUI input, or maybe I just can't find them in the files. If you want to use compound corrections, the best approach would be to look up the ion/target layer compound correction in the GUI can copy/paste the number to the script. Finally, a 'compound'=False argument is needed if the user wants to use a single atom layer. This is because some elements occupy both atom and compound directories, and this clarifies where to look. 
+
+If a compound does not exist in the TRIM default directory, one may be easily made by editing the compoundparse.py parser within the TRIMbatch module. At the bottom is a clearly marked section and a template to use. 'CF4' is given as an example. Compounds are stored in a structure where the name is a key for a dictionary containing 'Density' and 'Stoich' values. The density should be what one would expect at STP. The stoichimetry is given as a list of tuples, each of the form ['atomic number','%']. For example, CF4 is defined by adding the line:
+
+compounds['CF4'] = {'Density': 0.00372, 'Stoich': [[6,0.2],[9,0.8]]}
+
+This only has to be done once, and then the compound may be used in any future script by adding a target layer with the given name.
+
+Batch files are written with the makeBatch() method, which takes no additional arguments. The program takes care of naming files by concatenating the mass, chemical symbol, and energy of the ion.
+
+The nextIon() method takes the same ion arguments as initialization:
+
+nextIon(self,ion,mass,energy,number,angle=0,corr=0,autosave=10000)
+
+It will use the target information currently known to the object and automatically write a TRIM input file with the new ion data.
+
+The method batchFiles() will return a list of files created using the Batch object. This is useful for passing files to the simulation and plotting functions.
+
+Simulations are run in groups using:
+
+Sim(saveto,fs)
+
+'saveto' is the name of the directory where the input files to simulate live, the same argument that was used to initialize Batch objects. 'fs' is a list of files that may be given by the user, or passed using the batchFiles() method or the getFiles() function. TRIM will be run using wine, and simulation windows will open and close automatically for each ion to be simulated. The function will take care of saving output files to the 'saveto' directory given.
+
+The only plotting function is a wrapper for old C++ code used to make PID histograms:
+
+PIDPlot(saveto,fs,Xrange=0,Yrange=0,Xbins=50,Ybins=50)
+
+'saveto' and 'fs' are a location and list of files to plot, as before. The latter four arguments are passed to C++ and give ranges and bin sizes for the generated histograms. The C++ is hardcoded for 3 grid regions within TRIFIC, and therefore 3 PID plots are generated (each one comparing 2 grid regions) simultaneously. The function will block until user input is received so that ROOT is closed responsibly.
+
+getFiles(saveto) is a simple function that returns all simulation outputs for the given directory. Its intended use is for looking up files for generating plots without having to re-simulate or manually check what ions have been simulated.
 
 ## Development Notes ##
 
 Some useful notes and ideas for future improvements.
 
+PID plots may be generated without using the Python interface at all provided the C++ code from the repository has been cloned onto a linux machine and compiled. When the desired TRIM simulation outputs (typically called COLLISON.txt) have been secure copied from the simulating machine to the linux machine, use the following line:
 
+./TRIFICsim 12 /home/bundseth/... /home/bundseth/... * | ./csv2h2 -nx 50 -ny 50 -rx 200 -ry 200 -gn 12
 
+This will plot the PID histogram for grid regions 1 & 2. Change the occurences of '12' above to either '13' or '23' for the other two grid regions. As many TRIM output files may be given to TRIFICsim as desired, provided the full path is given and spaces separate the files. csv2h2 is the plotting code and takes -nx and -ny arguments for number of bins and -rx and -ry for range.
 
+The TRIFICsim program is also capable of generating values needed for Bragg curves, but no dedicated plotter exists. In the past, they have been made by copying the output of:
 
-Step 1: TRIM calculation
+cat ./TRIFICsim /home/bundseth/... /home/bundseth/... *
 
-The TRIMIN.sav file in this repository should be copied to the 'SRIM Restore' sub-directory within the main SRIM directory. Then open the SRIM program and select 'TRIM Calculation'. Selecting 'Resume saved TRIM calc.' should restore the inputs from the TRIMIN.sav file to the GUI. Then select 'Resume Saved TRIM' which should resume a completed simulation. Save nothing, and exit the results window. Now, back in the TRIM input GUI, adjustments to the parameters can  be made. The fields to review before running a simulation are:
-- Basic Plots; set to NO Graphics for fastest run time
-- Element, Mass, and Energy
-- Layers (single or double side aluminised mylar? mylar window thickness? gas layer width if more/less grids are inserted; gas density?)
-- Total number of Ions simulated; 100 per isotope seems to be sufficient
-- Output disk files; only 'Collision Details' are necessary
-Once these input fields are reviewed, 'Save Input & Run TRIM' can be selected. TRIM will prompt the user with a warning about the input target layer densities. Only the Mylar and Al2O3 densities should appear on this prompt, as the user should have input a custom density for the gas. Upon continuing, TRIM will simulate the specified number of ions. The user will be prompted to save or to calculate for more ions. Saving, and storing in the SRIM Directory, will result in a file named COLISON.txt being generated in the 'SRIM Outputs' sub-directory. The TRIM output window can now be closed, and the user will be prompted to save the calculation, which generates a TRIMIN.sav file for the calculation. This can be useful to generate if you will want to come back to the calculation in another session as you will not need to adjust all the input fields once more. 
+TRIFICsim.cpp must be compiled with the proper lines uncommented to receive the proper output. Note the constants defined at the start of the program. numGrids, spacing, windowToWires, may all need to be adjusted depending upon the mounted configuration. Note the structure of the printValues() function. The user needs to comment/uncomment the sections that correspond to the value generation they desire. The possible iterations are many, but they all center around the 2-D collectionRegions array. This array contains the summed energy losses by grid region (first array dimension), for every ion simulated (second array dimension). Refer to the processSRIMData() function for reference to this array construction. See TRIFIC ELog post with ID 50 for examples of PID and Bragg plots.
 
-Step 2: Analysis in TRIFIC simulation directory
+The process for generating Bragg plots is as cumbersome as generating EVERYTHING was before the interface was made. Making a plotter for Bragg curves is something to do moving forward. The C++ code for PID plots is also hard-coded and should be made more versatile. The wrapper currently part of the interface is only a temporary solution.
 
-The user will need to have this repository cloned onto a linux machine. Using a windows terminal program, such as MobaXterm, secure copy the COLISON.txt file(s) to an accesible location in the file system of the linux machine. SSH into the linux machine and open up the TRIFICsim.cpp file in a text editor. Note the constants defined at the start of the program.
-- numGrids, spacing, windowToWires, may all need to be adjusted depending upon the mounted configuration
-Note the structure of the printValues() function. The user needs to comment/uncomment the sections that correspond to the value generation they desire. The possible iterations are many, but they all center around the 2-D collectionRegions array. This array contains the summed energy losses by grid region (first array dimension), for every ion simulated (second array dimension). Refer to the processSRIMData() function for reference to this array construction. The two main types of plots one might want to create are PID plots, which are histograms that present data from every ion simulated, and Bragg plots, which are generally presented as line graphs containing the energy loss data per isotope simulated. See TRIFIC ELog post with ID 50 for examples of these plots. 
+Another common piece of information we use the simulations for is to find an operating pressure for the chamber. Ideally, we'd like the farthest-travelling ion to stop just before the end of the ~28cm TRIFIC chamber. Writing a function to sweep over a pressure range and return the optimal pressure is something else to do.
 
-With the TRIFICSim.cpp file tuned to the user's output preferences, the program can be compiled using the compile line given at the top of TRIFICsim.cpp. If generating a Bragg plot, simply running the program as described in the comments at the top of TRIFICsim.cpp should suffice. The data can be plotted and inspected in excel afterwards. If generating a PID, the output will need to be piped into ROOT. Open up the csv2h2.cpp file in a text editor. On lines 101-103 the plot and axis titles are defined, they should be adjusted to match the plot being generated. The file can be exited and compiled.
-
-As described at the top of csv2h2.cpp the data output from TRIFICsim can be piped directly into csv2h2. Some command line parameter inputs are available, notably adjustment of the x and y axis ranges. A typical run of the program for PID generation would be:
-
-./TRIFICsim /home/<user>/MyCollisionFiles/* | ./csv2h2 -rx 200 -ry 200
-
-## To-do ##
+Some other thoughts left behind, pertaining to the simulations & analysis:
 
 The TRIM calculations performed up to this point have all assumed that ions enter the chamber at a single position, and then experience straggling as they pass through the layers. A more realistic situation would be that the ions enter at a range of positions and more importantly, angles. This could be effected in the simulations by applying a random entering angle and position to each ion, and then adjusting the z-positions of every collision accordingly. The position distribution in z is all we are concerned with.
 
----
-
 The quoted section below is from the TRIM documentation, and details a more accurate way of calculating the energy deposition. It should be implemented for some fine improvement:
-"Referring to 'COLLISON.txt': This file shows the three-dimensional position of each major collision between the ion and the target atoms. It also shows in column six the instantaneous electronic energy loss of the ion to the target in units of eV/Å. If you need the three-dimensional electronic energy loss of the ion to the target, you now have all the necessary information. To obtain the energy deposited, calculate the path length between two successive collisions and multiply by the specific energy loss. For example, the distance between the first two collisions shown above is 16.3Å, with an energy loss of 15.86 eV/Å. This means the ion loses 258 eV into electronic excitations in this segment." 
-
----
+"Referring to 'COLLISON.txt': This file shows the three-dimensional position of each major collision between the ion and the target atoms. It also shows in column six the instantaneous electronic energy loss of the ion to the target in units of eV/Å. If you need the three-dimensional electronic energy loss of the ion to the target, you now have all the necessary information. To obtain the energy deposited, calculate the path length between two successive collisions and multiply by the specific energy loss. For example, the distance between the first two collisions shown above is 16.3Å, with an energy loss of 15.86 eV/Å. This means the ion loses 258 eV into electronic excitations in this segment."
 
 On the wiki, and in the sample simulation file, the absolute minimum distance for simulation is given as 279.18 mm with 21 grids installed. This neglects the bending of the mylar window towards the upstream beam line, roughly estimated to be about a centimetre. TRIM simulates incoming ions with no space distribution as to their entry, it is all from a single point. This is not physically the case with the upstream beam line arriving at TRIFIC, and also the fact of the window bend being convex means that the deviation from center of an ion's entering position will affect the point at which it first hits the aluminized layer. Such accuracy improvements may be overkill, but are interesting to consider as a future improvement. 
 
----
