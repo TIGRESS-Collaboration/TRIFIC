@@ -109,6 +109,7 @@ ROOT is used to generate plots from the processed simulation results. Go to http
 tar zxvf root_v6.10.06.Linux-centos7-x86_64-gcc4.8.tar.gz
 
 This will create a new directory called "root". To set up necessary environment variables, run:
+
 . /home/bundseth/root/bin/thisroot.sh
 
 Add this line to the bottom of ~/.bashrc. If this is not done (manually or otherwise), the software will not work. Try typing "root" into the terminal. The interactive shell should start if everything is good to go.
