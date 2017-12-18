@@ -3,16 +3,16 @@
  * To run program, use following command:
  *		cat fileName (multiple files) |./TRIFICsim
  * or:
- *		./TRIFICSim fileName (multiple files)
+ *		./TRIFICsim 12 fileName (multiple files) (12,13,23 indicates grid regions to print)
  * Can handle SRIM collision data from multiple isotopes
  * Ability to change (multiple) parameters from the command line:
- *		./TRIFICSim --parameter value fileName
+ *		./TRIFICsim --parameter value fileName
 **/
 
 
 
 /**
- * Program Name: TRIFIC Simulation, v0
+ * Program Name: TRIFIC Simulation, v1
  * File: TRIFICSim.cpp
  * Last Modified By: Brennan Undseth
  * Date: 2017-10-3
@@ -168,7 +168,7 @@ float processSRIMData (istream& srimCollisionDataSource, string isotopeName[], f
 
 // printValues() requires the user to comment/uncomment or write entirely new commands for...
 // ... printing the desired outputs
-float printValues(istream& srimCollisionDataSource, string isotopeName[], float isotopeMass[], float initialEnergy[], int ionNum[], int *totalIonsP, int *isotopeCountP, float collectionRegions[][10000]) {
+float printValues(istream& srimCollisionDataSource, string isotopeName[], float isotopeMass[], float initialEnergy[], int ionNum[], int *totalIonsP, int *isotopeCountP, float collectionRegions[][10000], int gridprint) {
 	
 	// LOOP PRINTS ION BY ION VALUES; FOR PID PLOTS
 	printf("\nPID for %s-%.0f\n\n", isotopeName[*isotopeCountP-1].c_str(), ceil(isotopeMass[*isotopeCountP-1]));
@@ -197,19 +197,25 @@ float printValues(istream& srimCollisionDataSource, string isotopeName[], float 
 
 		}
 			
-		// PRINT GRIDS 1-3 V. 4-6	
-	//	printf("%4.2f, %4.2f\n", firstPart, secondPart);
+		// PRINT GRIDS 1-3 V. 4-6
+		if (gridprint == 12) {	
+			printf("%4.2f, %4.2f\n", firstPart, secondPart);
+		}
 		
 		// PRINT GRIDS 1-3 V. 7-10
-	//	printf("%4.2f, %4.2f\n", firstPart, thirdPart);
+		if (gridprint == 13) {
+			printf("%4.2f, %4.2f\n", firstPart, thirdPart);
+		}
 
 		// PRINT GRIDS 4-6 V. 7-10
-	//	printf("%4.2f, %4.2f\n", secondPart, thirdPart);
+		if (gridprint == 23) {
+			printf("%4.2f, %4.2f\n", secondPart, thirdPart);
+		}
 
 	}	
 	
 	// LOOP PRINTS ISOTOPE BY ISOTOPE VALUES; FOR BRAGG PLOTS
-	
+	/*
 	printf("\nBragg for %s-%.0f\n\n", isotopeName[*isotopeCountP-1].c_str(), ceil(isotopeMass[*isotopeCountP-1]));
 	for (int i = 1; i < numGrids; i+=2) {
 
@@ -225,10 +231,10 @@ float printValues(istream& srimCollisionDataSource, string isotopeName[], float 
 		printf("%4.2f\n", (i+1)/2, collected);	
 
 	}	
-	
+	*/
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char** argv) {
 
 	int 	ionNum[arraySize]; 		// array for numbering ions of each isotope
 	int	isotopeCount = 0; 		// counter for the number of isotopes
@@ -236,6 +242,7 @@ int main(int argc, char* argv[]) {
 	string 	fileName;
 	float 	initialEnergy[arraySize]; 	// array of isotope initial energies
 	float 	isotopeMass[arraySize]; 	// array of ion masses.
+	int	gridprint = atoi(argv[1]);		// select which 2 of the 3 grid regions we would like to pipe to histogram plotter; anything besides 12, 13 or 23 prints nothing
 
 	string *isotopeName = new string[arraySize];
 
@@ -248,7 +255,7 @@ int main(int argc, char* argv[]) {
 	if (argc > 1) {
 
 		// each argument in the call is looped over
-		for (int i = 1; i < argc; i++) { 
+		for (int i = 2; i < argc; i++) { 
 
 			// argument is converted to a string for ease of manipulation
 			string argv_ = argv[i];
@@ -260,7 +267,7 @@ int main(int argc, char* argv[]) {
 			if(myfile.is_open()) { 
 
 				processSRIMData(myfile, isotopeName, isotopeMass, initialEnergy, ionNum, &totalIons, &isotopeCount, collectionRegions);
-				printValues(cin, isotopeName, isotopeMass, initialEnergy, ionNum, &totalIons, &isotopeCount, collectionRegions);
+				printValues(cin, isotopeName, isotopeMass, initialEnergy, ionNum, &totalIons, &isotopeCount, collectionRegions, gridprint);
 
 			}
 			
@@ -270,7 +277,7 @@ int main(int argc, char* argv[]) {
 	} else { 
 
 		processSRIMData(cin, isotopeName, isotopeMass, initialEnergy, ionNum, &totalIons, &isotopeCount, collectionRegions);
-		printValues(cin, isotopeName, isotopeMass, initialEnergy, ionNum, &totalIons, &isotopeCount, collectionRegions);
+		printValues(cin, isotopeName, isotopeMass, initialEnergy, ionNum, &totalIons, &isotopeCount, collectionRegions, gridprint);
 		
 	}
 
