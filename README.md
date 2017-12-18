@@ -12,7 +12,7 @@ install-wine-i686-centos7.sh is an extremely useful shell script for getting 32-
 
 The make file compiles the C++ code for convenience.
 
-examplesim.py contains an example script for simulating 4 ions in TRIFIC using the Python. For most future simulations, it should be sufficient to copy and paste the code, changing the necessary parameters and executing. A complete walkthrough exists in the tutorial below.
+examplesim.py contains an example script for simulating 4 ions in TRIFIC using the Python interface. For most future simulations, it should be sufficient to copy and paste the code, changing the necessary parameters and executing. The tutorial below contains a walkthrough of the code.
 
 The TRIMbatch module contains scripts for parsing TRIM's default atom and compound directories as well as the interface used for running TRIM in batch mode automatically. It requires only standard Python 3 modules.
 
