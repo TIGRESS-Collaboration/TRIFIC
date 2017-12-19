@@ -26,7 +26,9 @@ For extra notes and ideas for future work, see the Development Notes.
 
 All files used for setup/simulations/tutorial are included in the TRIFIC repository. SRIM software can be sownloaded from http://www.srim.org/SRIM/SRIMLEGL.htm. Here you should find all the documentation and tutorials needed to use the software. I recommend you familiarize yourself with the GUI and some basic simulations before using this software, although hopefully it is user-friendly enough that it is not a requirement! From here onwards, competency with SRIM is assumed. The first section below details all the setup required for a windows user who can ssh into a linux machine (CentOS 7). Alternatively, for the fastest way to hit the ground running, the user could use the "bundseth" account on smilodon, where SRIM-2013 has been set up and works with the existing code in the TRIFIC repository, and get going with simulations immediately (see the Tutorial).
 
-To begin, clone the TRIFIC repository into the user's home directory:
+To begin, clone the TRIFIC repository **into the user's __home__ directory**:
+
+cd
 
 git clone https://github.com/TIGRESS-Collaboration/TRIFIC.git
 
@@ -40,7 +42,7 @@ As administrator (su -), copy the install-wine-i686-centos7.sh file from github 
 
 ### Insatlling SRIM ###
 
-On the Linux machine, run: winecfg
+As a **user** on the Linux machine, run: winecfg
 
 This will set up a .wine directory. As wine started, it prompted certain missing packages to be installed, and all were accepted until a configuration GUI appeared. Select OK.
 
@@ -120,7 +122,7 @@ CentOS 7 comes with Python 2, but Python 3 is good practice. More importantly, t
 
 yum update
 
-yum install yum-utils https://centos7.iuscommunity.org/ius-release.rpm python 36u python36u-pip python36u-devel
+yum install yum-utils https://centos7.iuscommunity.org/ius-release.rpm python36u python36u-pip python36u-devel
 
 If continuing to develop the interface, setting up a virtual environment is a good idea.
 
