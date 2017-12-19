@@ -26,7 +26,7 @@ For extra notes and ideas for future work, see the Development Notes.
 
 All files used for setup/simulations/tutorial are included in the TRIFIC repository. SRIM software can be sownloaded from http://www.srim.org/SRIM/SRIMLEGL.htm. Here you should find all the documentation and tutorials needed to use the software. I recommend you familiarize yourself with the GUI and some basic simulations before using this software, although hopefully it is user-friendly enough that it is not a requirement! From here onwards, competency with SRIM is assumed. The first section below details all the setup required for a windows user who can ssh into a linux machine (CentOS 7). Alternatively, for the fastest way to hit the ground running, the user could use the "bundseth" account on smilodon, where SRIM-2013 has been set up and works with the existing code in the TRIFIC repository, and get going with simulations immediately (see the Tutorial).
 
-To begin, clone the TRIFIC repository **into the user's __home__ directory**:
+To begin, clone the TRIFIC repository **into the user's __home__ directory, ensuring the name of the directory is "TRIFIC"**:
 
 cd
 
