@@ -164,7 +164,7 @@ Next, we need to define the target data. We use the addTargetLayer method, givin
 
 batch.addTargetLayer(1,'Mylar',width=25,unit='um',gas=False)
 
-batch.addTargetLayer(2,'CF4',width=30,unit='cm',gas=True)
+batch.addTargetLayer(2,'CF4',width=30,unit='cm',pressure=80,gas=True)
 
 There are a lot of ways ions and target layers may be defined. The program will always use user-defined parameters (if given) above defaults, so making use of all the keyword arguments will give the most control. The program is smart enough to know what input combinations absolutely will not work and will give error messages accordingly. However, there are many ways to input garbage that TRIM will roll with, so double check what you feed the software if you want the results to make sense.
 
