@@ -234,7 +234,7 @@ The only plotting function is a wrapper for old C++ code used to make PID histog
 
 PIDPlot(dirname,fs,Xrange=0,Yrange=0,Xbins=50,Ybins=50)
 
-'dirname' and 'fs' are a location and list of files to plot, as before. The latter four arguments are passed to C++ and give ranges and bin sizes for the generated histograms. The C++ is hardcoded for 3 grid regions within TRIFIC, and therefore 3 PID plots are generated (each one comparing 2 grid regions) simultaneously. The function will block until user input is received so that ROOT is closed responsibly.
+'dirname' and 'fs' are a location and list of files to plot, as before. The latter four arguments are passed to C++ and give ranges and bin sizes for the generated histograms. The C++ is hardcoded for 3 grid regions within TRIFIC, and therefore 3 PID plots are generated (each one comparing 2 grid regions) simultaneously. The function will block until user input is received so that ROOT is closed responsibly. The TRIFICsim.cpp output processing file is hardcoded for thin window layers followed by the typical 21 grid layout & 12.77mm spacing. The file would have to be edited and recompiled for different setups, and changing this should be a high-priority improvement to be made in the future.
 
 getFiles(dirname)
 
@@ -259,6 +259,8 @@ cat ./TRIFICsim /home/bundseth/... /home/bundseth/... *
 TRIFICsim.cpp must be compiled with the proper lines uncommented to receive the proper output. Note the constants defined at the start of the program. numGrids, spacing, windowToWires, may all need to be adjusted depending upon the mounted configuration. Note the structure of the printValues() function. The user needs to comment/uncomment the sections that correspond to the value generation they desire. The possible iterations are many, but they all center around the 2-D collectionRegions array. This array contains the summed energy losses by grid region (first array dimension), for every ion simulated (second array dimension). Refer to the processSRIMData() function for reference to this array construction. See TRIFIC ELog post with ID 50 for examples of PID and Bragg plots.
 
 The process for generating Bragg plots is as cumbersome as generating EVERYTHING was before the interface was made. Making a plotter for Bragg curves is something to do moving forward. The C++ code for PID plots is also hard-coded and should be made more versatile. The wrapper currently existing in the interface is only a temporary solution.
+
+**The most useful next step** should be to rewrite the TRIFICsim.cpp processing file as Python and incorporate it into the interface (since this is where the user will input the grid setup anyway). The grid spacing, chamber length, etc. should be input by the user when calling the plotting function so the PID plots can be tailored to the setup. Then, the Python output can still be piped to csv2h2.cpp to make pretty ROOT histograms.
 
 Another common piece of information we use the simulations for is to find an operating pressure for the chamber. Ideally, we'd like the farthest-travelling ion to stop just before the end of the ~28cm TRIFIC chamber. Writing a function to sweep over a pressure range and return the optimal pressure is something else to do.
 
